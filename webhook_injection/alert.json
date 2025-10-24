@@ -1,0 +1,20 @@
+{
+    "severity": 6,
+    "summary": "webhook test",
+    "resource": {
+        "name": "resource",
+        "hostname": "hostname",
+        "ipAddress": "0.0.0.0",
+        "sourceId": "laptop",
+        "port": 8080
+    },
+    "type": {
+        "classification": "webhook test",
+        "eventType": "problem"
+    },
+    "sender": {
+        "name": "bash",
+        "sourceId": "laptop",
+        "type": "webhook"
+    }
+}
