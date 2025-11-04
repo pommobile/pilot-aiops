@@ -14,13 +14,13 @@ snin=$(echo $incident | jq -r '.result.number')
 # Patch alert with ServiceNow incident number
 
 route=aiops-cpd.lb-axa-aiops.dev.fyre.ibm.com
-path=aiops/api/issue-resolution/v1/alerts
+epath=aiops/api/issue-resolution/v1/alerts
 x_tenant_id=cfd95b7e-3bc7-4006-a4a8-a73a79c71255
 api_key=A6x917ZVZdzrxtRbCJXlwABfzOQqxFvClNt5EFQl
 zen_api_key=$(echo "cpadmin:$api_key" | base64 -w 0)
 
 alert=$(curl -k -s \
-    https://$route/$path/$alert_id \
+    https://$route/$epath/$alert_id \
         --header 'Content-Type: application/json' \
         --header "Authorization: ZenApiKey $zen_api_key" \
         --header "X-TenantID: $x_tenant_id")
@@ -30,7 +30,7 @@ details=$(echo { \"SNIN\": \"$snin\"} )
 
 curl -k -s \
         -X PATCH \
-        https://$route/$path/$alert_id?wait_for_commit=false \
+        https://$route/$epath/$alert_id?wait_for_commit=false \
         --header 'Content-Type: application/json' \
         --header "Authorization: ZenApiKey $zen_api_key" \
         --header "X-TenantID: $x_tenant_id" \
