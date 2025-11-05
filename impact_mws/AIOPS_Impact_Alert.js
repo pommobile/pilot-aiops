@@ -1,4 +1,4 @@
-Log("-> Impact alert injection...");
+Log("-> AIOPS_Impact_Alert...");
 
 Load('AIOPS_Utils');
 
@@ -23,4 +23,4 @@ var alert = {
 
 aiopsUtils.postAlert(alert, true);
 
-Log("<- Impact alert injection.");
+Log("<- AIOPS_Impact_Alert.");
