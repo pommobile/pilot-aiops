@@ -1,3 +1,4 @@
 ssh_fyre*
 *.zip
 node_modules/
+*.pem

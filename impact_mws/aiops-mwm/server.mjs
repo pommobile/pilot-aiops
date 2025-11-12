@@ -1,7 +1,11 @@
-import express from "express";
-import fetch from "node-fetch";
-import https from "https";
+import fs from 'node:fs';
+import path from 'node:path';
+import https from 'node:https';
+import express from 'express';
+import { fileURLToPath } from 'node:url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
@@ -55,6 +59,9 @@ app.post("/", async (req, res) => {
     }
 });
 
-app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
-
-app.listen(8080, "127.0.0.1", () => console.log("Listening on http://127.0.0.1:8080"));
+const keyPath = path.join(__dirname, 'key.pem');
+const certPath = path.join(__dirname, 'cert.pem');
+const httpsOptions = { key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath) };
+https.createServer(httpsOptions, app).listen(8443, () => {
+  console.log(`HTTPS server listening on port 8443`);
+});
