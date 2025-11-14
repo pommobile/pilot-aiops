@@ -1,42 +1,18 @@
 Log("-> MWM_Create_From_AIOPS...");
 
-log(3, "full json is " + full_json_input);
+Log("full json: " + full_json_input);
 JsonObject = ParseJSON(full_json_input);
-resource = JsonObject.resource;
+startTime = JsonObject.startTime;
+endTime = JsonObject.endTime;
+myresource = JsonObject.resource;
 
 Log("startTime: " + startTime);
 Log("endTime: " + endTime);
-Log("resource: " + resource);
-
-// Logging initial values
-Log(3, "\n\n\n\n\n");
+Log("resource: " + myresource);
 
 @onetstart = startTime;
 @onetend = endTime; 
-
 @timezone = "CET";
- 
-Log(3, "Current epoch time is: " + GetDate());
-Log(3, "Values from Browser: ");
-
-Log(3, "Window start: " + @onetstart);
-Log(3, "t1: " + @t1);
-
-// 2009-08-10 09:38:05
-
-Log(3, "Window end: " + @onetend);
-//2009-08-13 09:38:11
-
-Log(3, "timezone is: " + @timezone);
-//CST
-//Log(3, "dst is: " + @dst); // 0 (not checked) or 1 (checked)
-//onetstart = @onetstart;
-/*
-dstString = "";
-If (@dst = 1) {
-    dstString = "Daylight Savings";
-}
-*/
 
 // Tweaking times
 
@@ -296,13 +272,12 @@ onetime_end = String(onetime_end);
 // Now build the filter statement
 // ==============================
 
-myfilter = '(Identifier="' + resource + '")';
+myfilter = '(Identifier="' + myresource + '")';
 Log(3, "myfilter: " + myfilter);
 
 // Now build the descriptions statement
 // ====================================
 
- 
 request = "SELECT COUNT(*) AS ROWCOUNT FROM IMPACT.MM_WINDOWS WHERE (WINTYPE = 1)";
 result = DirectSQL('ImpactDB', request, false);
 count = Replace(result[0], "ROWCOUNT = ", "");
@@ -320,12 +295,12 @@ window.eot_endtime = onetime_end;
 window.timezone = @timezone;
 window.mwm_descriptions = mwm_desc;
 mwIdToEdit = JsonObject.mwIdToEdit;
-Log(3, "MwIdToEdit is " + mwIdToEdit); 
+Log("MwIdToEdit: " + mwIdToEdit); 
 bool = false; 
 if (mwIdToEdit = NULL) { 
  MWM_Util.jMadrox(window, bool); 
 }
-Log(3, "bool is " + bool); 
+Log("bool: " + bool); 
 If (bool == false) {
     // Perform insert
     myinsert = "INSERT INTO IMPACT.MM_WINDOWS (FILTERSTAT, WINTYPE, OT_STARTTIME, EOT_STARTTIME, OT_ENDTIME, EOT_ENDTIME, TIMEZONE, MWM_DESCRIPTIONS)";
@@ -336,21 +311,21 @@ If (bool == false) {
       rowToEdit = DirectSQL('ImpactDB', rowToEditSelect, false);
       myinsert = "UPDATE IMPACT.MM_WINDOWS set FILTERSTAT = '" + myfilter + "', WINTYPE = 1 , OT_STARTTIME = '" + @onetstart + "', EOT_STARTTIME = " + onetime_start + ", OT_ENDTIME = '" + @onetend + "', EOT_ENDTIME = " + onetime_end + ", TIMEZONE = '" + @timezone + "', MWM_DESCRIPTIONS = '" + mwm_desc + "' where MWID = " + mwIdToEdit;
     }
-    Log(3, "Insert/update is " + myinsert);
+    Log("Insert: " + myinsert);
     DirectSQL('ImpactDB', myinsert, false); 
     if (mwIdToEdit <> NULL) {
        // clear SuppressEscl in all events for the old filter
-       Log(2, "Original filter was " + rowToEdit[0].FILTERSTAT); 
+       Log("Original filter: " + rowToEdit[0].FILTERSTAT); 
         overlap = false;  
        MWM_Util.checkForActiveMWMWithFilter(rowToEdit[0].FILTERSTAT, overlap);  
        if (! overlap) {
-         Log(2, "Clearing fields in Objectserver with filter " + rowToEdit[0].FILTERSTAT); 
+         Log("Clearing fields in Objectserver with filter " + rowToEdit[0].FILTERSTAT); 
          sq_filter = Replace(rowToEdit[0].FILTERSTAT, "\"", "'"); 
          updateSql = "UPDATE alerts.status set SuppressEscl = 0 where SuppressEscl = 6 AND " + sq_filter;
-         Log(3, "UpdateSql is " + updateSql); 
+         Log("UpdateSql is " + updateSql); 
          DirectSQL('defaultobjectserver', updateSql, false);
        } else {
-         Log(2, "Not Clearing fields in Objectserver");
+         Log("Not Clearing fields in Objectserver");
        }
     } else {
        // Inserting a new MWM so insert username info in mm_extrainfo table  
@@ -359,11 +334,10 @@ If (bool == false) {
        Log(3, "Result is " + Result); 
        ResultString = "" + Result; 
        maxId = rextract(String(ResultString), '.*= (\d+)');
-       Log(3, "MaxId is " + maxId + " and userName is " + JsonObject.userName);
-       escapedUserName = JsonObject.userName;
-       escapeUserName(escapedUserName);
+       Log("MaxId is " + maxId + " and userName is " + 'impact');
+       escapedUserName = 'impact';
        userNameInsert = "INSERT INTO IMPACT.MM_EXTRAINFO (MWID, USERNAME) values (" + maxId + ", '" +  escapedUserName + "')";
-       Log(3, "userNameInsert is " + userNameInsert); 
+       Log("userNameInsert is " + userNameInsert); 
        DirectSQL('ImpactDB', userNameInsert, false); 
     } 
  

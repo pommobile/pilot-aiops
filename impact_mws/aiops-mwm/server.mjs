@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import https from 'node:https';
+import fetch from 'node-fetch';
 import express from 'express';
 import { fileURLToPath } from 'node:url';
 
@@ -62,6 +63,6 @@ app.post("/", async (req, res) => {
 const keyPath = path.join(__dirname, 'key.pem');
 const certPath = path.join(__dirname, 'cert.pem');
 const httpsOptions = { key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath) };
-https.createServer(httpsOptions, app).listen(8443, () => {
-  console.log(`HTTPS server listening on port 8443`);
+https.createServer(httpsOptions, app).listen(8080, () => {
+  console.log(`HTTPS server listening on port 8080`);
 });
