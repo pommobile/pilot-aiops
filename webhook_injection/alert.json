@@ -1,6 +1,6 @@
 {
     "severity": 6,
-    "summary": "webhook test",
+    "summary": "alert promoted as incident",
     "resource": {
         "name": "resource",
         "hostname": "hostname",

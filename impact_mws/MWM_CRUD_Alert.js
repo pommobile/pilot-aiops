@@ -6,6 +6,14 @@ function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); });
 }
 
+function pad(n) {
+  return (n < 10 ? '0' : '') + n;
+}
+  
+function formatDate(date) {
+  return (date.getUTCFullYear() + '-' + pad(date.getUTCMonth() + 1) + '-' + pad(date.getUTCDate()) + 'T' + pad(date.getUTCHours()) + ':' + pad(date.getUTCMinutes()) + ':' + pad(date.getUTCSeconds()) + '.000Z');
+}
+ 
 var aiopsMetadata = {
   dataSourceName: "AIOps-impact-364bf8d5-0bc0-41ec-b289-466ad56d83c6"
 };
@@ -49,23 +57,28 @@ for (var i = 0; i < mws.length; i++) {
     Log("-- MWM_CRUD_Alert endTime: " + endTime);
 
     var resource = mw.FILTERSTAT;
-    Log("-- MWM_CRUD_Alert resource: " + resource);
+    Log("-- MWM_CRUD_Alert filter: " + resource);
     var match = resource.match(/Identifier\s*=\s*"([^"]+)"/);
     if (match) {
        resource = match[1];
        Log("-- MWM_CRUD_Alert resource: " + resource);
     }
 
-    var summary = "MW " + description + " from " + startTime + " to " + endTime + " on " + resource + " created";
+    var summary = description + " from " + startTime + " to " + endTime + " on " + resource + " created";
     Log("-- MWM_CRUD_Alert " + summary);
 
     var id = uuid();
-
+    Log("-- MWM_CRUD_Alert id: " + id);
+    var now = formatDate(new Date());
+ 
     var alert = {
         id: id,
         severity: 1,
-        type: { eventType: "problem", classification: "Impact service" },
+        firstOccurrenceTime: now,
+        lastOccurrenceTime: now,
+        type: { eventType: "problem", classification: "Impact service", condition: id },
         resource: { name: resource },
+        sender: { name: resource },
         deduplicationKey: "null",
         summary: summary
     };
