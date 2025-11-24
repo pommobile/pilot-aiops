@@ -1,6 +1,7 @@
 ssh_fyre
 .DS_Store
 *.zip
+*.tgz
 node_modules/
 *.pem
 .classpath
