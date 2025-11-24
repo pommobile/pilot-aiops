@@ -1,4 +1,9 @@
-ssh_fyre*
+ssh_fyre
+.DS_Store
 *.zip
 node_modules/
 *.pem
+.classpath
+.project
+target
+
